@@ -1,0 +1,356 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Marketing101 CSV Splitter</title>
+    <style>
+        body 
+        {
+            background: white
+        }
+
+        section 
+        {
+            background: black;
+            color: white;
+            border-radius: 1em;
+            padding: 1em;
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            margin-right: -50%;
+            transform: translate(-50%, -10%)
+        }
+
+        center
+        {
+            font-size:45px;
+        }
+
+        #warning
+        {
+            color:red;
+        }
+    </style>
+    <script src="../js/jquery-3.3.1.min.js"></script>
+    <script src="../js/jquery.csv.js"></script>
+    <script src="../js/FileSaver.min.js"></script>
+    <script src="../js/moment.js"></script>
+    <script>
+
+        // Pre-allocate CSV arrays.
+        var file1Array, file2Array, file1String, file2String, printexOutputArray, xlusionOutputArray, pillowProfitsOutputArray, leftoverOutputArray;
+
+        // Pre-allocate Country Codes into searchable Array
+        var countryData = [{"Code": "AF", "Name": "Afghanistan"},{"Code": "AX", "Name": "\u00c5land Islands"},{"Code": "AL", "Name": "Albania"},{"Code": "DZ", "Name": "Algeria"},{"Code": "AS", "Name": "American Samoa"},{"Code": "AD", "Name": "Andorra"},{"Code": "AO", "Name": "Angola"},{"Code": "AI", "Name": "Anguilla"},{"Code": "AQ", "Name": "Antarctica"},{"Code": "AG", "Name": "Antigua and Barbuda"},{"Code": "AR", "Name": "Argentina"},{"Code": "AM", "Name": "Armenia"},{"Code": "AW", "Name": "Aruba"},{"Code": "AU", "Name": "Australia"},{"Code": "AT", "Name": "Austria"},{"Code": "AZ", "Name": "Azerbaijan"},{"Code": "BS", "Name": "Bahamas"},{"Code": "BH", "Name": "Bahrain"},{"Code": "BD", "Name": "Bangladesh"},{"Code": "BB", "Name": "Barbados"},{"Code": "BY", "Name": "Belarus"},{"Code": "BE", "Name": "Belgium"},{"Code": "BZ", "Name": "Belize"},{"Code": "BJ", "Name": "Benin"},{"Code": "BM", "Name": "Bermuda"},{"Code": "BT", "Name": "Bhutan"},{"Code": "BO", "Name": "Bolivia, Plurinational State of"},{"Code": "BQ", "Name": "Bonaire, Sint Eustatius and Saba"},{"Code": "BA", "Name": "Bosnia and Herzegovina"},{"Code": "BW", "Name": "Botswana"},{"Code": "BV", "Name": "Bouvet Island"},{"Code": "BR", "Name": "Brazil"},{"Code": "IO", "Name": "British Indian Ocean Territory"},{"Code": "BN", "Name": "Brunei Darussalam"},{"Code": "BG", "Name": "Bulgaria"},{"Code": "BF", "Name": "Burkina Faso"},{"Code": "BI", "Name": "Burundi"},{"Code": "KH", "Name": "Cambodia"},{"Code": "CM", "Name": "Cameroon"},{"Code": "CA", "Name": "Canada"},{"Code": "CV", "Name": "Cape Verde"},{"Code": "KY", "Name": "Cayman Islands"},{"Code": "CF", "Name": "Central African Republic"},{"Code": "TD", "Name": "Chad"},{"Code": "CL", "Name": "Chile"},{"Code": "CN", "Name": "China"},{"Code": "CX", "Name": "Christmas Island"},{"Code": "CC", "Name": "Cocos (Keeling) Islands"},{"Code": "CO", "Name": "Colombia"},{"Code": "KM", "Name": "Comoros"},{"Code": "CG", "Name": "Congo"},{"Code": "CD", "Name": "Congo, the Democratic Republic of the"},{"Code": "CK", "Name": "Cook Islands"},{"Code": "CR", "Name": "Costa Rica"},{"Code": "CI", "Name": "C\u00f4te d'Ivoire"},{"Code": "HR", "Name": "Croatia"},{"Code": "CU", "Name": "Cuba"},{"Code": "CW", "Name": "Cura\u00e7ao"},{"Code": "CY", "Name": "Cyprus"},{"Code": "CZ", "Name": "Czech Republic"},{"Code": "DK", "Name": "Denmark"},{"Code": "DJ", "Name": "Djibouti"},{"Code": "DM", "Name": "Dominica"},{"Code": "DO", "Name": "Dominican Republic"},{"Code": "EC", "Name": "Ecuador"},{"Code": "EG", "Name": "Egypt"},{"Code": "SV", "Name": "El Salvador"},{"Code": "GQ", "Name": "Equatorial Guinea"},{"Code": "ER", "Name": "Eritrea"},{"Code": "EE", "Name": "Estonia"},{"Code": "ET", "Name": "Ethiopia"},{"Code": "FK", "Name": "Falkland Islands(Malvinas)"},{"Code": "FO", "Name": "Faroe Islands"},{"Code": "FJ", "Name": "Fiji"},{"Code": "FI", "Name": "Finland"},{"Code": "FR", "Name": "France"},{"Code": "GF", "Name": "French Guiana"},{"Code": "PF", "Name": "French Polynesia"},{"Code": "TF", "Name": "French Southern Territories"},{"Code": "GA", "Name": "Gabon"},{"Code": "GM", "Name": "Gambia"},{"Code": "GE", "Name": "Georgia"},{"Code": "DE", "Name": "Germany"},{"Code": "GH", "Name": "Ghana"},{"Code": "GI", "Name": "Gibraltar"},{"Code": "GR", "Name": "Greece"},{"Code": "GL", "Name": "Greenland"},{"Code": "GD", "Name": "Grenada"},{"Code": "GP", "Name": "Guadeloupe"},{"Code": "GU", "Name": "Guam"},{"Code": "GT", "Name": "Guatemala"},{"Code": "GG", "Name": "Guernsey"},{"Code": "GN", "Name": "Guinea"},{"Code": "GW", "Name": "Guinea - Bissau"},{"Code": "GY", "Name": "Guyana"},{"Code": "HT", "Name": "Haiti"},{"Code": "HM", "Name": "Heard Island and McDonald Islands"},{"Code": "VA", "Name": "Holy See(Vatican City State)"},{"Code": "HN", "Name": "Honduras"},{"Code": "HK", "Name": "Hong Kong"},{"Code": "HU", "Name": "Hungary"},{"Code": "IS", "Name": "Iceland"},{"Code": "IN", "Name": "India"},{"Code": "ID", "Name": "Indonesia"},{"Code": "IR", "Name": "Iran, Islamic Republic of"},{"Code": "IQ", "Name": "Iraq"},{"Code": "IE", "Name": "Ireland"},{"Code": "IM", "Name": "Isle of Man"},{"Code": "IL", "Name": "Israel"},{"Code": "IT", "Name": "Italy"},{"Code": "JM", "Name": "Jamaica"},{"Code": "JP", "Name": "Japan"},{"Code": "JE", "Name": "Jersey"},{"Code": "JO", "Name": "Jordan"},{"Code": "KZ", "Name": "Kazakhstan"},{"Code": "KE", "Name": "Kenya"},{"Code": "KI", "Name": "Kiribati"},{"Code": "KP", "Name": "Korea, Democratic People's Republic of"},{"Code": "KR", "Name": "Korea, Republic of"},{"Code": "KW", "Name": "Kuwait"},{"Code": "KG", "Name": "Kyrgyzstan"},{"Code": "LA", "Name": "Lao People's Democratic Republic"},{"Code": "LV", "Name": "Latvia"},{"Code": "LB", "Name": "Lebanon"},{"Code": "LS", "Name": "Lesotho"},{"Code": "LR", "Name": "Liberia"},{"Code": "LY", "Name": "Libya"},{"Code": "LI", "Name": "Liechtenstein"},{"Code": "LT", "Name": "Lithuania"},{"Code": "LU", "Name": "Luxembourg"},{"Code": "MO", "Name": "Macao"},{"Code": "MK", "Name": "Macedonia, the Former Yugoslav Republic of"},{"Code": "MG", "Name": "Madagascar"},{"Code": "MW", "Name": "Malawi"},{"Code": "MY", "Name": "Malaysia"},{"Code": "MV", "Name": "Maldives"},{"Code": "ML", "Name": "Mali"},{"Code": "MT", "Name": "Malta"},{"Code": "MH", "Name": "Marshall Islands"},{"Code": "MQ", "Name": "Martinique"},{"Code": "MR", "Name": "Mauritania"},{"Code": "MU", "Name": "Mauritius"},{"Code": "YT", "Name": "Mayotte"},{"Code": "MX", "Name": "Mexico"},{"Code": "FM", "Name": "Micronesia, Federated States of"},{"Code": "MD", "Name": "Moldova, Republic of"},{"Code": "MC", "Name": "Monaco"},{"Code": "MN", "Name": "Mongolia"},{"Code": "ME", "Name": "Montenegro"},{"Code": "MS", "Name": "Montserrat"},{"Code": "MA", "Name": "Morocco"},{"Code": "MZ", "Name": "Mozambique"},{"Code": "MM", "Name": "Myanmar"},{"Code": "NA", "Name": "Namibia"},{"Code": "NR", "Name": "Nauru"},{"Code": "NP", "Name": "Nepal"},{"Code": "NL", "Name": "Netherlands"},{"Code": "NC", "Name": "New Caledonia"},{"Code": "NZ", "Name": "New Zealand"},{"Code": "NI", "Name": "Nicaragua"},{"Code": "NE", "Name": "Niger"},{"Code": "NG", "Name": "Nigeria"},{"Code": "NU", "Name": "Niue"},{"Code": "NF", "Name": "Norfolk Island"},{"Code": "MP", "Name": "Northern Mariana Islands"},{"Code": "NO", "Name": "Norway"},{"Code": "OM", "Name": "Oman"},{"Code": "PK", "Name": "Pakistan"},{"Code": "PW", "Name": "Palau"},{"Code": "PS", "Name": "Palestine, State of"},{"Code": "PA", "Name": "Panama"},{"Code": "PG", "Name": "Papua New Guinea"},{"Code": "PY", "Name": "Paraguay"},{"Code": "PE", "Name": "Peru"},{"Code": "PH", "Name": "Philippines"},{"Code": "PN", "Name": "Pitcairn"},{"Code": "PL", "Name": "Poland"},{"Code": "PT", "Name": "Portugal"},{"Code": "PR", "Name": "Puerto Rico"},{"Code": "QA", "Name": "Qatar"},{"Code": "RE", "Name": "R\u00e9union"},{"Code": "RO", "Name": "Romania"},{"Code": "RU", "Name": "Russian Federation"},{"Code": "RW", "Name": "Rwanda"},{"Code": "BL", "Name": "Saint Barth\u00e9lemy"},{"Code": "SH", "Name": "Saint Helena, Ascension and Tristan da Cunha"},{"Code": "KN", "Name": "Saint Kitts and Nevis"},{"Code": "LC", "Name": "Saint Lucia"},{"Code": "MF", "Name": "Saint Martin(French part)"},{"Code": "PM", "Name": "Saint Pierre and Miquelon"},{"Code": "VC", "Name": "Saint Vincent and the Grenadines"},{"Code": "WS", "Name": "Samoa"},{"Code": "SM", "Name": "San Marino"},{"Code": "ST", "Name": "Sao Tome and Principe"},{"Code": "SA", "Name": "Saudi Arabia"},{"Code": "SN", "Name": "Senegal"},{"Code": "RS", "Name": "Serbia"},{"Code": "SC", "Name": "Seychelles"},{"Code": "SL", "Name": "Sierra Leone"},{"Code": "SG", "Name": "Singapore"},{"Code": "SX", "Name": "Sint Maarten(Dutch part)"},{"Code": "SK", "Name": "Slovakia"},{"Code": "SI", "Name": "Slovenia"},{"Code": "SB", "Name": "Solomon Islands"},{"Code": "SO", "Name": "Somalia"},{"Code": "ZA", "Name": "South Africa"},{"Code": "GS", "Name": "South Georgia and the South Sandwich Islands"},{"Code": "SS", "Name": "South Sudan"},{"Code": "ES", "Name": "Spain"},{"Code": "LK", "Name": "Sri Lanka"},{"Code": "SD", "Name": "Sudan"},{"Code": "SR", "Name": "Suriname"},{"Code": "SJ", "Name": "Svalbard and Jan Mayen"},{"Code": "SZ", "Name": "Swaziland"},{"Code": "SE", "Name": "Sweden"},{"Code": "CH", "Name": "Switzerland"},{"Code": "SY", "Name": "Syrian Arab Republic"},{"Code": "TW", "Name": "Taiwan, Province of China"},{"Code": "TJ", "Name": "Tajikistan"},{"Code": "TZ", "Name": "Tanzania, United Republic of"},{"Code": "TH", "Name": "Thailand"},{"Code": "TL", "Name": "Timor - Leste"},{"Code": "TG", "Name": "Togo"},{"Code": "TK", "Name": "Tokelau"},{"Code": "TO", "Name": "Tonga"},{"Code": "TT", "Name": "Trinidad and Tobago"},{"Code": "TN", "Name": "Tunisia"},{"Code": "TR", "Name": "Turkey"},{"Code": "TM", "Name": "Turkmenistan"},{"Code": "TC", "Name": "Turks and Caicos Islands"},{"Code": "TV", "Name": "Tuvalu"},{"Code": "UG", "Name": "Uganda"},{"Code": "UA", "Name": "Ukraine"},{"Code": "AE", "Name": "United Arab Emirates"},{"Code": "GB", "Name": "United Kingdom"},{"Code": "US", "Name": "United States"},{"Code": "UM", "Name": "United States Minor Outlying Islands"},{"Code": "UY", "Name": "Uruguay"},{"Code": "UZ", "Name": "Uzbekistan"},{"Code": "VU", "Name": "Vanuatu"},{"Code": "VE", "Name": "Venezuela, Bolivarian Republic of"},{"Code": "VN", "Name": "Viet Nam"},{"Code": "VG", "Name": "Virgin Islands, British"},{"Code": "VI", "Name": "Virgin Islands, U.S."},{"Code": "WF", "Name": "Wallis and Futuna"},{"Code": "EH", "Name": "Western Sahara"},{"Code": "YE", "Name": "Yemen"},{"Code": "ZM", "Name": "Zambia"},{"Code": "ZW", "Name": "Zimbabwe"}];
+
+        // Get current date
+        var currentDate = moment().format("YYYY-MM-DD");
+
+
+        $(document).ready(function ()
+        {
+
+            // Disable buttons to start
+            $("#file1").prop('disabled', true);
+            $("#file2").prop('disabled', true);
+            $("#splitbutton").prop('disabled', true);
+            $("#printexbutton").prop('disabled', true);
+            $("#xlusionbutton").prop('disabled', true);
+            $("#pillowprofitsbutton").prop('disabled', true);
+            $("#leftoverbutton").prop('disabled', true);
+
+            // Check for various API support and if not disable the elements
+            if (isAPIAvailable())
+            {
+                $("#outputdiv").html("loaded");
+                $("#file1").prop('disabled', false);
+            }
+            else
+            {
+                $("#file1").prop('disabled', true);
+                $("#file2").prop('disabled', true);
+                $("#splitbutton").prop('disabled', true);
+            }
+        });
+
+        function isAPIAvailable()
+        {
+            // Check for the various File API support.
+            if (window.File && window.FileReader && window.FileList && window.Blob)
+            {
+                return true;
+            }
+            else
+            {
+                document.writeln('The HTML5 APIs used in this form are only available in the following browsers:<br />');
+                document.writeln(' - Google Chrome: 13.0 or later<br />');
+                document.writeln(' - Mozilla Firefox: 6.0 or later<br />');
+                document.writeln(' - Internet Explorer: Not supported (partial support expected in 10.0)<br />');
+                document.writeln(' - Safari: Not supported<br />');
+                document.writeln(' - Opera: Not supported');
+                return false;
+            }
+        }
+
+        function loadFile1(files)
+        {
+            // Load up a FileReader to get the first CSV
+            var reader = new FileReader();
+            reader.onload = function (event)
+            {
+                file1String = event.target.result;
+                $("#file2").prop('disabled', false);
+            };
+            reader.onerror = function () { alert('Unable to read ' + file.fileName); };
+            reader.readAsText(files[0]);
+        }
+
+        function loadFile2(files)
+        {
+            // Load up a FileReader to get the second CSV
+            var reader = new FileReader();
+            reader.onload = function (event)
+            {
+                file2String = event.target.result;
+                $("#splitbutton").prop('disabled', false);
+            };
+            reader.onerror = function () { alert('Unable to read ' + file.fileName); };
+            reader.readAsText(files[0]);
+        }
+
+        function splitCSV()
+        {
+            // Load CSVs into Arrays
+            file1Array = $.csv.toArrays(file1String);
+            file2Array = $.csv.toArrays(file2String);
+
+            // Initialize output arrays
+            xlusionOutputArray = [];
+            printexOutputArray = [];
+            pillowProfitsOutputArray = [];
+            leftoverOutputArray = [];
+            var str = "";
+            var itemName, uniqueCodePosition, uniqueCode;
+            printexArrayPosition = 1;
+            xlusionArrayPosition = 1;
+            pillowProfitsArrayPosition = 1;
+            leftoverArrayPosition = 1;
+
+            // Place headers into output arrays
+            printexOutputArray[0] = ["Order Number", "Customer Name", "Payer Email Address", "Address 1", "Address 2", "City", "State", "Zip Code", "Country", "File URL", "Quantity", "Style / Size / Color"];
+            xlusionOutputArray[0] = ["shop_id", "order_id", "company", "name", "phone", "address_1", "address_2", "city", "state_province", "zip", "country", "sku", "qty"];
+            pillowProfitsOutputArray[0] = ["Order ID", "Name", "Address", "City", "State/Province", "Zipcode", "Country", "Phone (Optional)", "Shipping Email (Optional)", "Item SKU", "Quantity"];
+            leftoverOutputArray[0] = file1Array[0];
+
+            // Parse user Date field for later comparison
+            var userMoment = moment($("#datepicker").val());
+            var orderMoment;
+
+            // For every row in the orders CSV
+            for (var row in file1Array)
+            {
+                itemName = file1Array[row][1];
+                orderMoment = moment(file1Array[row][0], "MM/DD/YY");
+
+                // If the date falls within the proper timeframe
+                if (orderMoment.isAfter(userMoment) || orderMoment.isSame(userMoment))
+                {
+                    // If the item name contains a Printex unique code
+                    if ((uniqueCodePosition = itemName.search("#PX")) > 0)
+                    {
+                        uniqueCode = itemName.slice(uniqueCodePosition);
+
+                        // Look for the unique code in the item list
+                        for (var uniqueCodeRow in file2Array)
+                        {
+                            // When you find the unique code's row, build a row in the Printex array
+                            if (uniqueCode === file2Array[uniqueCodeRow][0])
+                            {
+                                printexOutputArray[printexArrayPosition] = [];
+                                printexOutputArray[printexArrayPosition][0] = file1Array[row][24];
+                                printexOutputArray[printexArrayPosition][1] = file1Array[row][17];
+                                printexOutputArray[printexArrayPosition][2] = "" + $("#userEmail").val();
+                                printexOutputArray[printexArrayPosition][3] = file1Array[row][18];
+                                printexOutputArray[printexArrayPosition][4] = file1Array[row][19];
+                                printexOutputArray[printexArrayPosition][5] = file1Array[row][20];
+                                printexOutputArray[printexArrayPosition][6] = file1Array[row][21];
+                                printexOutputArray[printexArrayPosition][7] = file1Array[row][22];
+                                printexOutputArray[printexArrayPosition][8] = file1Array[row][23];
+                                printexOutputArray[printexArrayPosition][9] = file2Array[uniqueCodeRow][4];
+                                printexOutputArray[printexArrayPosition][10] = file1Array[row][3];
+                                printexOutputArray[printexArrayPosition][11] = file2Array[uniqueCodeRow][3] + " / " + file1Array[row][25];
+                            }
+                        }
+                        printexArrayPosition++;
+                    }
+                    // If the item name contains an Xlusion unique code
+                    else if ((uniqueCodePosition = itemName.search("#XL")) > 0)
+                    {
+                        uniqueCode = itemName.slice(uniqueCodePosition);
+
+                        // Look for the unique code in the item list
+                        for (var uniqueCodeRow in file2Array)
+                        {
+                            // When you find the unique code's row, build a row in the Xlusion array
+                            if (uniqueCode === file2Array[uniqueCodeRow][0])
+                            {
+                                var size;
+                                var tempArray = file1Array[row][25].split(",");
+                                for (var tempRow in tempArray)
+                                {
+                                    if ((sizePosition = tempArray[tempRow].search("Size:")) >= 0)
+                                    {
+                                        size = tempArray[tempRow].slice(sizePosition + 5);
+                                    }
+                                }
+                                xlusionOutputArray[xlusionArrayPosition] = [];
+                                xlusionOutputArray[xlusionArrayPosition][0] = file2Array[uniqueCodeRow][5];
+                                xlusionOutputArray[xlusionArrayPosition][1] = file1Array[row][24];
+                                xlusionOutputArray[xlusionArrayPosition][2] = "";
+                                xlusionOutputArray[xlusionArrayPosition][3] = file1Array[row][17];
+                                xlusionOutputArray[xlusionArrayPosition][4] = "";
+                                xlusionOutputArray[xlusionArrayPosition][5] = file1Array[row][18];
+                                xlusionOutputArray[xlusionArrayPosition][6] = file1Array[row][19];
+                                xlusionOutputArray[xlusionArrayPosition][7] = file1Array[row][20];
+                                xlusionOutputArray[xlusionArrayPosition][8] = file1Array[row][21];
+                                xlusionOutputArray[xlusionArrayPosition][9] = file1Array[row][22];
+                                xlusionOutputArray[xlusionArrayPosition][10] = file1Array[row][23];
+                                xlusionOutputArray[xlusionArrayPosition][11] = file2Array[uniqueCodeRow][6] + size;
+                                xlusionOutputArray[xlusionArrayPosition][12] = file1Array[row][3];
+                            }
+                        }
+                        xlusionArrayPosition++;
+                    }
+                    // If the item name contains an Pillow Profits unique code
+                    else if ((uniqueCodePosition = itemName.search("#PP")) > 0)
+                    {
+                        uniqueCode = itemName.slice(uniqueCodePosition);
+
+                        // Look for the unique code in the item list
+                        for (var uniqueCodeRow in file2Array)
+                        {
+                            // When you find the unique code's row, build a row in the Pillow Profits array
+                            if (uniqueCode === file2Array[uniqueCodeRow][0] && file1Array[row][25].slice(5) === file2Array[uniqueCodeRow][7])
+                            {
+                                //Find the proper Country Code
+                                var countryCode;
+                                for (var countryRow in countryData)
+                                {
+                                    if (countryData[countryRow].Name === file1Array[row][23])
+                                    {
+                                        countryCode = countryData[countryRow].Code;
+                                    }
+                                }
+
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition] = [];
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition][0] = file1Array[row][24];
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition][1] = file1Array[row][17];;
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition][2] = file1Array[row][18] + " " + file1Array[row][19];
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition][3] = file1Array[row][20];
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition][4] = file1Array[row][21];
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition][5] = file1Array[row][22];
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition][6] = countryCode;
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition][7] = "";
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition][8] = "";
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition][9] = file2Array[uniqueCodeRow][8];
+                                pillowProfitsOutputArray[pillowProfitsArrayPosition][10] = file1Array[row][3];
+                            }
+                        }
+                        pillowProfitsArrayPosition++;
+                    }
+                    else
+                    {
+                        leftoverOutputArray[leftoverArrayPosition] = file1Array[row];
+                        leftoverArrayPosition++;
+                    }
+                }
+            }
+
+            $("#splitConfirmation").html("&nbsp&nbsp&nbspFile split completed!");
+            $("#printexbutton").css({ height: 40, width: 300});
+            $("#xlusionbutton").css({ height: 40, width: 300 });
+            $("#pillowprofitsbutton").css({ height: 40, width: 300 });
+            $("#printexbutton").prop('disabled', false);
+            $("#xlusionbutton").prop('disabled', false);
+            $("#pillowprofitsbutton").prop('disabled', false);
+
+            if (leftoverOutputArray.length > 1)
+            {
+                $("#leftoverbutton").css({ height: 40, width: 300 });
+                $("#leftoverbutton").prop('disabled', false);
+            }
+        }
+
+        function downloadPrintex()
+        {
+            // Create a String from the Printex output array, place in blob, save with a specific filename
+            var blob = new Blob([$.csv.fromArrays(printexOutputArray)], { type: "text/plain;charset=utf-8" });
+            saveAs(blob, "Printex-" + currentDate + ".csv");
+        }
+
+        function downloadXlusion()
+        {
+            // Create a String from the Xlusion output array, place in blob, save with a specific filename
+            var blob = new Blob([$.csv.fromArrays(xlusionOutputArray)], { type: "text/plain;charset=utf-8" });
+            saveAs(blob, "Xlusion-" + currentDate + ".csv");
+        }
+
+        function downloadPillowProfits()
+        {
+            // Create a String from the Xlusion output array, place in blob, save with a specific filename
+            var blob = new Blob([$.csv.fromArrays(pillowProfitsOutputArray)], { type: "text/plain;charset=utf-8" });
+            saveAs(blob, "PillowProfits-" + currentDate + ".csv");
+        }
+
+        function downloadLeftover()
+        {
+            // Create a String from the Xlusion output array, place in blob, save with a specific filename
+            var blob = new Blob([$.csv.fromArrays(leftoverOutputArray)], { type: "text/plain;charset=utf-8" });
+            saveAs(blob, "Leftover-" + currentDate + ".csv");
+        }
+
+        function downloadTemplate()
+        {
+            var url = "M101-product-list-template.csv";
+            var link = document.createElement('a');
+            document.body.appendChild(link);
+            link.href = url;
+            link.click();
+        }
+
+    </script>
+</head>
+
+<body>
+    <noscript>If you can see this your browser does not currently allow JavaScript!</noscript>
+    <section>
+        <center>Marketing 101 CSV Splitter</center><br /><br /><br />
+        <h1>Step 1: Choose your "Etsy Sold Order Items" CSV</h1>
+        <input type="file" id="file1" onchange="loadFile1(this.files)" /><br />
+        <h1>Step 2: Choose your personal "Product Code List" CSV</h1>
+        <input type="file" id="file2" onchange="loadFile2(this.files)" /><br />
+        <h1>Step 3: Choose an "Order Since" date</h1>
+        Date: <input type="date" id="datepicker"> (Place your mouse over the text-box and click the large down-arrow)<br />
+        <h1>Step 4: Enter your email to receive Printex shipping notifications</h1>
+        Email: <input type="text" id="userEmail" value=" " /> (Leave blank to recieve no notifications)<br />
+        <h1>Step 5: Press this button to split the CSVs</h1>
+        <input type="button" id="splitbutton" value="Split CSV" onclick="splitCSV()" style="float:left" /> <div id="splitConfirmation" style="float:left"></div><br />
+        <h1>Step 6: Press these buttons to individually download your CSVs</h1>
+        <input type="button" id="printexbutton" value="Download Printex CSV" onclick="downloadPrintex()" /><br />
+        <input type="button" id="xlusionbutton" value="Download Xlusion CSV" onclick="downloadXlusion()" /><br />
+        <input type="button" id="pillowprofitsbutton" value="Download Pillow Profits CSV" onclick="downloadPillowProfits()" /><br />
+        <input type="button" id="leftoverbutton" value="Download Leftover CSV" onclick="downloadLeftover()" /><br /><br /><br />
+        <div id="warning">This software is free, and you use it at your own risk. Please verify your order files before submitting to any of the suppliers!!!</div><br /><br /><br />
+        <h1>Rules for the CSV Splitter</h1>
+        1. The CSV in "Step 1" must be specifically the "Order Items" CSV from the "Download Data" section of Etsy.<br />
+        2. All "Personal Product Codes" must start with "#PX" for Printex, "#XL" for Xlusion, and "#PP" for Pillow Profits.<br />
+        3. Xlusion products listed on Etsy must be made using the "Create a New Variation" so that the sizes listed only contain their letters (S, M, L, XL, XXL) and nothing else.<br />
+        4. Pillow Profits products listed on Etsy must be made using the "Create a New Variation" so that the sizes listed only contain their numbers (7, 7.5, 8...) and nothing else.<br />
+        5. Entering an "Order Since" date will give you all orders between that date and the current date (including the date chosen).<br />
+        6. The email section of "Step 4" is for Printex to send you "Shipping Notifications" that you would then need to enter manually into your Etsy store.<br />
+        <h1>Template Download Link</h1>
+        Download the template here: <input type="button" id="templatebutton" value="Download Template" onclick="downloadTemplate()" />
+    </section>
+</body>
+</html>

@@ -1,0 +1,19 @@
+Unique Item ID,Item Name,Vendor,Product,Printex File URL,Xlusion Store ID,Xlusion Product Code,Pillow Profits Size,Pillow Profits SKU
+#XL1,Leggings 1,Xlusion,Leggings,,MyStore,XN-1234,,
+#XL2,Leggings 2,Xlusion,Leggings,,MyStore,XN-4321,,
+#PX100,Cool Grandma,Printex ,Mug,http://myurl1.com/picture.jpg,,,,
+#PX101,5 Reasons Grandma,Printex,Mug,PERSONALIZED,,,,
+#PX200,Cool Grandma T-shirt,Printex,T-Shirt,http://myurl2.com/picture.jpg,,,,
+#PX201,5 Reasons Grandma T-Shirt,Printex,T-Shirt,PERSONALIZED,,,,
+#PX300,Cool Grandma,Printex,Cutting Board,http://myurl3.com/picture.jpg,,,,
+#PX301,5 Reasons Grandma,Printex,Cutting Board,PERSONALIZED,,,,
+#PX400,Cool Grandma,Printex,Travel Mug,http://myurl4.com/picture.jpg,,,,
+#PX401,5 Reasons Grandma,Printex,Travel Mug,PERSONALIZED,,,,
+#MM500,Cool Grandma,Printex,Printable Art,http://myurl5.com/picture.jpg,,,,
+#MM501,5 Reasons Grandma,Printex,Printable Art,PERSONALIZED,,,,
+#PP100,Cool Grandma,Pillow Profits,Pillowcase,,,,,
+#PP101,5 Reasons Grandma,Pillow Profits,Pillowcase,,,,,
+#PP200,Cool Grandma,Pillow Profits,Tote Bag,,,,,
+#PP201,5 Reasons Grandma,Pillow Profits,Tote Bag,,,,,
+#PP300,White Sneakers Size 7,Pillow Profits,Sneakers,,,,7,PP.0987
+#PP300,White Sneakers Size 8,Pillow Profits,Sneakers,,,,8,PP.0988
